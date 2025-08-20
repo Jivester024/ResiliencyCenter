@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Osher Center for Integrative Health</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <!-- jsPDF and html2canvas libraries for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Custom Styles based on University of Utah Style Guide */
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background-color: #F7F9FB; /* Digital Gray */
+        }
+        h1, h2, h3.title-font {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .utah-red { color: #BE0000; }
+        .utah-red-bg { background-color: #BE0000; }
+        .red-rocks { color: #890000; }
+
+        /* Custom shadow styles using accent colors */
+        .shadow-marigold { box-shadow: 0 10px 15px -3px rgba(239, 192, 65, 0.4), 0 4px 6px -2px rgba(239, 192, 65, 0.2); }
+        .hover\:shadow-marigold-lg:hover { box-shadow: 0 20px 25px -5px rgba(239, 192, 65, 0.5), 0 10px 10px -5px rgba(239, 192, 65, 0.3); }
+        .shadow-moab { box-shadow: 0 10px 15px -3px rgba(157, 216, 215, 0.6), 0 4px 6px -2px rgba(157, 216, 215, 0.4); }
+        .hover\:shadow-moab-lg:hover { box-shadow: 0 20px 25px -5px rgba(157, 216, 215, 0.7), 0 10px 10px -5px rgba(157, 216, 215, 0.5); }
+        .shadow-coral { box-shadow: 0 10px 15px -3px rgba(228, 147, 123, 0.5), 0 4px 6px -2px rgba(228, 147, 123, 0.3); }
+        .hover\:shadow-coral-lg:hover { box-shadow: 0 20px 25px -5px rgba(228, 147, 123, 0.6), 0 10px 10px -5px rgba(228, 147, 123, 0.4); }
+        .shadow-sunrise { box-shadow: 0 10px 15px -3px rgba(255, 184, 29, 0.4), 0 4px 6px -2px rgba(255, 184, 29, 0.2); }
+        .hover\:shadow-sunrise-lg:hover { box-shadow: 0 20px 25px -5px rgba(255, 184, 29, 0.5), 0 10px 10px -5px rgba(255, 184, 29, 0.3); }
+        .shadow-green { box-shadow: 0 10px 15px -3px rgba(108, 194, 74, 0.4), 0 4px 6px -2px rgba(108, 194, 74, 0.2); }
+        .hover\:shadow-green-lg:hover { box-shadow: 0 20px 25px -5px rgba(108, 194, 74, 0.5), 0 10px 10px -5px rgba(108, 194, 74, 0.3); }
+        .shadow-lake { box-shadow: 0 10px 15px -3px rgba(79, 134, 142, 0.5), 0 4px 6px -2px rgba(79, 134, 142, 0.3); }
+        .hover\:shadow-lake-lg:hover { box-shadow: 0 20px 25px -5px rgba(79, 134, 142, 0.6), 0 10px 10px -5px rgba(79, 134, 142, 0.4); }
+
+        .section-description {
+            font-size: 1rem;
+            color: #808080;
+            line-height: 1.7;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Navigation Styles */
+        nav a {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s, color 0.3s;
+            font-weight: 600;
+        }
+        nav a.active {
+            background-color: #BE0000;
+            color: white;
+        }
+        nav a:not(.active) {
+            color: #333;
+        }
+        nav a:not(.active):hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Styles for PDF generation prep */
+        .pdf-prepare-mode .card-button-interactive,
+        .pdf-prepare-mode .contact-button-interactive {
+            display: none !important;
+        }
+        .pdf-prepare-mode .card-button-pdf,
+        .pdf-prepare-mode .contact-info-pdf {
+            display: inline !important;
+            color: #0000EE !important;
+            text-decoration: underline !important;
+            font-weight: normal !important;
+            background-color: transparent !important;
+            word-break: break-all !important;
+            font-size: 10px !important;
+        }
+         .pdf-prepare-mode .contact-info-pdf {
+            margin-left: 0.5rem;
+        }
+        .pdf-prepare-mode .contact-text {
+            display: none !important;
+        }
+
+        /* Specific overrides for PDF text size and layout */
+        .pdf-prepare-mode h2.title-font {
+            font-size: 22px !important;
+            margin-bottom: 1rem !important;
+        }
+        .pdf-prepare-mode p.section-description {
+            font-size: 12px !important;
+            margin-bottom: 1rem !important;
+        }
+        .pdf-prepare-mode #contact-section p {
+             font-size: 12px !important;
+        }
+        .pdf-prepare-mode .grid > div { /* Targeting the cards */
+            padding: 12px !important;
+        }
+        .pdf-prepare-mode .grid h3 {
+            font-size: 13px !important;
+            font-weight: bold;
+            margin-bottom: 6px !important;
+        }
+        .pdf-prepare-mode .grid p {
+            font-size: 10px !important;
+            line-height: 1.4 !important;
+            margin-bottom: 4px !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Header Section -->
+    <header class="bg-white shadow-md p-4 flex flex-col justify-between items-center sticky top-0 z-50 no-print">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full">
+            <a href="https://healthcare.utah.edu/" target="_blank" class="mb-4 md:mb-0">
+                <img src="https://healthcare.utah.edu/themes/custom/theme_uou_clinical/logo.svg" alt="University of Utah Health Logo" class="h-12 mx-auto md:mx-0">
+            </a>
+            <h1 class="text-2xl md:text-4xl font-bold title-font text-center">
+                <a href="https://healthcare.utah.edu/integrative-health/" target="_blank" class="utah-red hover:red-rocks transition-colors duration-300">Osher Center for Integrative Health</a>
+            </h1>
+        </div>
+        <!-- Navigation -->
+        <nav class="mt-4 flex space-x-2 md:space-x-4">
+            <a href="#" id="nav-resiliency" class="active">Resiliency Center Services</a>
+            <a href="#" id="nav-programs">Whole Person Health</a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="container mx-auto p-4 md:p-8">
+        <!-- Disclaimer for Internal Use -->
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-8 no-print" role="alert">
+            <p class="font-bold">Osher Center Internal Document</p>
+            <p>This document is intended for Internal Referrals within the Osher Center at the University of Utah and not intended for public sharing.</p>
+        </div>
+
+        <!-- Contact Information Section -->
+        <section id="contact-section" class="bg-white rounded-lg shadow-md p-6 mb-8 text-center md:text-left">
+            <h2 class="text-2xl font-bold utah-red mb-4 title-font">Contact Information</h2>
+            
+            <!-- Resiliency Center Contact Info -->
+            <div id="resiliency-contact">
+                <p class="text-lg mb-2 flex flex-wrap items-center justify-center md:justify-start">
+                    <strong>Website:</strong>
+                    <span class="contact-text ml-2">healthcare.utah.edu/integrative-health/resiliency-center</span>
+                    <a href="https://healthcare.utah.edu/integrative-health/resiliency-center" target="_blank" class="utah-red-bg text-white px-4 py-2 rounded-lg hover:opacity-80 transition-opacity duration-300 shadow-lg inline-block contact-button-interactive ml-2">
+                        Visit Website
+                    </a>
+                     <a href="https://healthcare.utah.edu/integrative-health/resiliency-center" target="_blank" class="hidden contact-info-pdf">healthcare.utah.edu/integrative-health/resiliency-center</a>
+                </p>
+                <p class="text-lg mb-2 flex flex-wrap items-center justify-center md:justify-start">
+                    <strong>Phone:</strong>
+                    <span class="contact-text ml-2">801-213-3403</span>
+                    <a href="tel:801-213-3403" class="utah-red-bg text-white px-4 py-2 rounded-lg hover:opacity-80 transition-opacity duration-300 shadow-lg inline-block contact-button-interactive ml-2">
+                        Call Us
+                    </a>
+                    <a href="tel:801-213-3403" class="hidden contact-info-pdf">801-213-3403</a>
+                </p>
+                <p class="text-lg mb-2 flex flex-wrap items-center justify-center md:justify-start">
+                    <strong>Email:</strong>
+                    <span class="contact-text ml-2">resiliencycenter@hsc.utah.edu</span>
+                    <a href="mailto:resiliencycenter@hsc.utah.edu" class="utah-red-bg text-white px-4 py-2 rounded-lg hover:opacity-80 transition-opacity duration-300 shadow-lg inline-block contact-button-interactive ml-2">
+                        Email Us
+                    </a>
+                    <a href="mailto:resiliencycenter@hsc.utah.edu" class="hidden contact-info-pdf">resiliencycenter@hsc.utah.edu</a>
+                </p>
+                <p class="text-lg flex flex-wrap items-center justify-center md:justify-start">
+                    <strong>Location:</strong>
+                    <span class="contact-text ml-2">295 Chipeta Way, Fourth floor, Salt Lake City, UT 84108</span>
+                    <a href="https://maps.app.goo.gl/whnvBpSakzRsoLLN9" target="_blank" class="utah-red-bg text-white px-4 py-2 rounded-lg hover:opacity-80 transition-opacity duration-300 shadow-lg inline-block contact-button-interactive ml-2">
+                        View on Map
+                    </a>
+                </p>
+            </div>
+
+            <!-- Osher Programs Contact Info -->
+            <div id="programs-contact" style="display: none;">
+                 <p class="text-lg mb-2 flex flex-wrap items-center justify-center md:justify-start">
+                    <strong>Website:</strong>
+                    <span class="contact-text ml-2">healthcare.utah.edu/integrative-health</span>
+                    <a href="https://healthcare.utah.edu/integrative-health" target="_blank" class="utah-red-bg text-white px-4 py-2 rounded-lg hover:opacity-80 transition-opacity duration-300 shadow-lg inline-block contact-button-interactive ml-2">
+                        Visit Website
+                    </a>
+                    <a href="https://healthcare.utah.edu/integrative-health" target="_blank" class="hidden contact-info-pdf">healthcare.utah.edu/integrative-health</a>
+                </p>
+                <p class="text-lg mb-2 flex flex-wrap items-center justify-center md:justify-start">
+                    <strong>Phone:</strong>
+                    <span class="contact-text ml-2">801-213-3403</span>
+                    <a href="tel:801-213-3403" class="utah-red-bg text-white px-4 py-2 rounded-lg hover:opacity-80 transition-opacity duration-300 shadow-lg inline-block contact-button-interactive ml-2">
+                        Call Us
+                    </a>
+                     <a href="tel:801-213-3403" class="hidden contact-info-pdf">801-213-3403</a>
+                </p>
+                <p class="text-lg flex flex-wrap items-center justify-center md:justify-start">
+                    <strong>Location:</strong>
+                    <span class="contact-text ml-2">295 Chipeta Way, Fourth floor, Salt Lake City, UT 84108</span>
+                    <a href="https://maps.app.goo.gl/whnvBpSakzRsoLLN9" target="_blank" class="utah-red-bg text-white px-4 py-2 rounded-lg hover:opacity-80 transition-opacity duration-300 shadow-lg inline-block contact-button-interactive ml-2">
+                        View on Map
+                    </a>
+                </p>
+            </div>
+        </section>
+
+        <!-- Content containers for each page -->
+        <div id="resiliency-content"></div>
+        <div id="programs-content" style="display: none;"></div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="utah-red-bg text-white text-center p-4 mt-8 no-print">
+        <div class="my-4">
+             <button id="download-pdf" class="bg-white text-black font-bold py-3 px-6 rounded-lg hover:bg-gray-200 transition-colors duration-300 shadow-lg">Download Page as PDF</button>
+        </div>
+        <p>&copy; 2025 University of Utah Health</p>
+    </footer>
+
+    <script>
+        // --- DATA FOR SERVICES ---
+
+        // Resiliency Center Services Data
+        const resiliencyServices = [
+            {
+                category: 'Psychological Support',
+                program: 'Individual Consultations',
+                description: 'Get personalized support to handle work challenges and boost your overall well-being. Focus on stress management, employee well-being, and personal resilience.',
+                whoIsItFor: 'Employees',
+                cost: 'No Cost',
+                setting: 'Osher Center or virtual',
+                duration: '50 minutes for 1-4 sessions',
+                contact: 'RC; https://redcap01.brisc.utah.edu/ccts/redcap/surveys/?s=KK49KR3DEMXDJ3ET',
+                buttonText: 'Refer',
+                buttonLink: 'https://redcap.link/peersupportreferral',
+                sectionDescription: "When professional stressors intensify, strong personal coping mechanisms are key. Our confidential services equip you with effective strategies and direct assistance to buffer intense work periods. Strengthening your capacity to navigate these challenges enhances your resilience and performance, vital for our institution's compassionate care."
+            },
+            {
+                category: 'Psychological Support',
+                program: 'Group Check-ins',
+                description: 'Connect with colleagues to share experiences and build a stronger team. Improve team resilience, workplace support, and peer connection.',
+                whoIsItFor: 'Teams',
+                cost: 'No Cost',
+                setting: 'On location or virtual',
+                duration: '50 minutes, once off or regularly scheduled',
+                contact: 'RC; Request Form',
+                buttonText: 'Request',
+                buttonLink: 'https://utah.sjc1.qualtrics.com/jfe/form/SV_abo3R87zemFLCrc'
+            },
+            {
+                category: 'Psychological Support',
+                program: 'Peer Support',
+                description: 'Find understanding and support from fellow colleagues who share similar experiences. Enhance social connection, employee support, and caring culture.',
+                whoIsItFor: 'Employees',
+                cost: 'No Cost',
+                setting: 'Osher Center or virtual',
+                duration: '30 minutes to an hour',
+                contact: 'https://redcap01.brisc.utah.edu/ccts/redcap/surveys/?s=KK49KR3DEMXDJ3ET',
+                buttonText: 'Refer',
+                buttonLink: 'https://redcap.link/peersupportreferral'
+            },
+            {
+                category: 'Psychological Support',
+                program: 'Code Lavender & Debriefs',
+                description: 'Receive quick, expert support for individuals and teams after tough work events. We also offer coaching for leaders on how to support their teams. Essential for post-stress recovery, team support, and organizational resilience.',
+                whoIsItFor: 'Employees; Teams',
+                cost: 'No Cost',
+                setting: 'On location or virtual',
+                duration: '50 minutes',
+                contact: '1-2222: Code Lavender;SmartWeb: Code Lavender Group;,RC',
+                buttonText: 'How to Activate',
+                buttonLink: 'https://pulse.utah.edu/site/resiliency/Pages/Code%20Lavender.aspx'
+            },
+            {
+                category: 'Team Empowerment',
+                program: 'Joy in Work Initiatives',
+                description: 'Work together to remove daily frustrations and find more satisfaction and meaning in your job. Boost team morale, workplace satisfaction, and employee engagement.',
+                whoIsItFor: 'System; Teams',
+                cost: 'No Cost',
+                setting: 'On location or virtual',
+                duration: 'Variable',
+                contact: 'RC; Request Form',
+                buttonText: 'Request',
+                buttonLink: 'https://utah.sjc1.qualtrics.com/jfe/form/SV_abo3R87zemFLCrc',
+                sectionDescription: 'Effective, supported teams are vital for institutional success. We help teams reduce work strains and daily operational friction, while building energizing factors like clear communication and mutual aid, enhancing cohesion and productivity.'
+            },
+            {
+                category: 'Team Empowerment',
+                program: 'Team Improvement',
+                description: 'Strengthen your team, make workflows smoother, and build shared skills for better teamwork. Focus on team building, workflow optimization, and efficient collaboration.',
+                whoIsItFor: 'Teams',
+                cost: 'No Cost',
+                setting: 'On location or virtual',
+                duration: 'Variable',
+                contact: 'RC; Request Form',
+                buttonText: 'Request',
+                buttonLink: 'https://utah.sjc1.qualtrics.com/jfe/form/SV_abo3R87zemFLCrc'
+            },
+            {
+                category: 'Team Empowerment',
+                program: 'Presentations, Workshops & Series',
+                description: 'Request engaging sessions that offer insights and tools to help your team thrive in demanding work environments, covering topics like Psychological Safety, Feedback, Burnout, Culture of Wellness, and Occupational Stress.',
+                whoIsItFor: 'System; Teams',
+                cost: 'No Cost',
+                setting: 'On location or virtual',
+                duration: '10 minutes to an 1 hour',
+                contact: 'RC; Request Form',
+                buttonText: 'Request',
+                buttonLink: 'https://utah.sjc1.qualtrics.com/jfe/form/SV_abo3R87zemFLCrc'
+            },
+            {
+                category: 'Team Empowerment',
+                program: 'Leadership Consultations',
+                description: 'Get guidance on how to create supportive work environments, reduce job stress, and build stronger teams. Key for leadership development, employee retention, and team resilience.',
+                whoIsItFor: 'Leaders',
+                cost: 'No Cost',
+                setting: 'Osher Center or virtual',
+                duration: '30 minutes or a 1 hour',
+                contact: 'RC; Request Form',
+                buttonText: 'Request',
+                buttonLink: 'https://utah.sjc1.qualtrics.com/jfe/form/SV_abo3R87zemFLCrc'
+            },
+            {
+                category: 'Courses & Trainings',
+                program: 'Joy in Work Foundations Conference',
+                description: 'Learn essential skills for positive work experiences, balancing stress with support, and building resilience. Discover the 9 components of the Joy in Work model. Great for professional development, stress reduction, and work-life balance.',
+                whoIsItFor: 'Employees; Leaders',
+                cost: 'No Cost',
+                setting: 'On location',
+                duration: '1 day',
+                contact: 'https://redcap01.brisc.utah.edu/ccts/redcap/surveys/?s=TYJHD4RKLLFJAE9A',
+                buttonText: 'Visit Website',
+                buttonLink: 'https://redcap01.brisc.utah.edu/ccts/redcap/surveys/?s=TYJHD4RKLLFJAE9A',
+                sectionDescription: "Professional development is key to navigating demanding work. Our courses offer practical skills and strategies, which are valuable personal assets, to manage occupational challenges, cultivate strengths, and enhance individual and institutional capability."
+            },
+            {
+                category: 'Courses & Trainings',
+                program: 'Joy in Work Facilitators Course',
+                description: 'Become a leader in improving work satisfaction by guiding projects that reduce frustrations and build team strengths. Ideal for change management, team leadership, and employee empowerment.',
+                whoIsItFor: 'Employees (Selected or Interested)',
+                cost: 'No Cost',
+                setting: 'Virtual',
+                duration: 'Meet 4 1-hour times over 6 months and dissemination project',
+                contact: 'https://admin.healthcare.utah.edu/integrative-health/resiliency-center/joy-in-work#Foundations-Course',
+                buttonText: 'Visit Website',
+                buttonLink: 'https://admin.healthcare.utah.edu/integrative-health/resiliency-center/joy-in-work#Foundations-Course'
+            },
+            {
+                category: 'Courses & Trainings',
+                program: 'Utah Advanced Communication Training',
+                description: 'Develop vital communication skills for complex patient interactions and workplace challenges. Improve interpersonal communication, conflict resolution, and professional development.',
+                whoIsItFor: 'Employees, Teams',
+                cost: 'No Cost',
+                setting: 'Virtual or On location',
+                duration: '4 1.5-hour trainings',
+                contact: 'https://peak.webapps.med.utah.edu/category/68',
+                buttonText: 'Visit Website',
+                buttonLink: 'https://peak.webapps.med.utah.edu/category/68'
+            },
+            {
+                category: 'Courses & Trainings',
+                program: 'Flourishing in Medicine: A Mindfulness Retreat',
+                description: 'Learn mindfulness practices to manage work stress, improve focus, and enhance your overall well-being. Focus on mindfulness training, stress reduction, and mental wellness.',
+                whoIsItFor: 'Employees/ Community',
+                cost: '$50/$250',
+                setting: 'On location',
+                duration: '1 day',
+                contact: 'https://peak.webapps.med.utah.edu/course/1941',
+                buttonText: 'Visit Website',
+                buttonLink: 'https://peak.webapps.med.utah.edu/course/1941'
+            },
+            {
+                category: 'Resilient Systems',
+                program: 'Better U Survey Committee',
+                description: 'An effort to assess well-being, identify workplace pressures, and improve support for our staff. Supports employee well-being assessment, organizational support, and workforce health and engagement.',
+                whoIsItFor: 'System',
+                cost: 'No Cost',
+                setting: 'Online',
+                duration: 'Bi-Annualy or Yearly',
+                contact: 'RC',
+                sectionDescription: "A supportive work environment addresses systemic factors. We aim to improve organizational structures that cause undue strain and build robust institutional supports like autonomy and clear processes, strengthening the organization."
+            },
+            {
+                category: 'Resilient Systems',
+                program: 'Joy in Medicine Roadmap',
+                description: 'A national plan to improve occupational well-being by solving common professional issues and strengthening institutional support. Drives work-life improvement, healthcare professional support, and institutional change.',
+                whoIsItFor: 'System',
+                cost: 'No Cost',
+                setting: 'N/A',
+                duration: 'Multi-Year',
+                contact: 'RC'
+            },
+            {
+                category: 'Resilient Systems',
+                program: 'Toolkits & Resources',
+                description: 'Access helpful tools and guides to manage workplace difficulties and support your well-being. Provides self-help tools, well-being resources, and workplace support.',
+                whoIsItFor: 'Public',
+                cost: 'No Cost',
+                setting: 'Online',
+                duration: 'N/A',
+                contact: 'Website Address'
+            },
+            {
+                category: 'Resilient Systems',
+                program: 'Health Care Stories',
+                description: 'An inspiring series that builds community through shared experiences, promoting connection and empathy. Enhance community building, employee connection, and empathy in healthcare.',
+                whoIsItFor: 'Public',
+                cost: 'No Cost',
+                setting: 'On Premises',
+                duration: '1 evening for 3 hours',
+                contact: 'Website Address'
+            }
+        ];
+
+        // Osher Center Programs Data (from PDF)
+        const osherPrograms = [
+            {
+                category: 'Lifestyle & Coaching',
+                program: 'Health Coaching',
+                description: 'Specialized coaching to help people make progress toward long-term health by breaking down big goals into smaller, realistic, and attainable steps.',
+                whoIsItFor: 'Anyone desiring to improve their health through healthier behaviors.',
+                cost: 'Free',
+                setting: 'Virtual',
+                duration: '30-60 Min',
+                notes: 'AMB Referral to Wellness',
+                sectionDescription: "Our lifestyle and coaching programs provide personalized guidance to help you build sustainable, healthy habits for long-term well-being."
+            },
+            {
+                category: 'Lifestyle & Coaching',
+                program: 'Intensive Lifestyle Program',
+                description: 'This program looks at the components of a healthy lifestyle to get you started on your way to feeling great, improving sleep, energy, mood, and focus.',
+                whoIsItFor: 'Community members and employees wanting to improve health in a group setting.',
+                cost: 'Community: $150, Employees: $50',
+                setting: 'In-Person',
+                duration: '12 weekly, 90 min sessions',
+                notes: 'AMB Referral to Wellness'
+            },
+            {
+                category: 'Lifestyle & Coaching',
+                program: 'Lifestyle Medicine Consult',
+                description: 'Get a comprehensive lifestyle medicine plan and help to implement it. This service helps you make healthy behavioral changes to prevent and treat disease.',
+                whoIsItFor: 'Anyone looking to change their lifestyle to prevent or treat chronic disease.',
+                cost: 'Billed through insurance',
+                setting: 'Virtual or In-Person',
+                duration: '60 Min',
+                notes: 'AMB Referral to Wellness'
+            },
+            {
+                category: 'Movement & Fitness',
+                program: 'Exercise Prescription',
+                description: 'A personalized plan designed to enhance your health and fitness, based on your goals, current fitness level, limitations, and preferences.',
+                whoIsItFor: 'Anyone interested in a structured exercise plan.',
+                cost: 'University: $40, Community: $80',
+                setting: 'Virtual or In-Person',
+                duration: '60 Min',
+                notes: 'AMB Referral to Wellness',
+                sectionDescription: "Enhance your physical health with our expert-led fitness programs, designed to improve strength, mobility, and overall vitality in a supportive environment."
+            },
+            {
+                category: 'Movement & Fitness',
+                program: 'Personal Trainer & Fitness Movement',
+                description: '60 minutes of personalized, one-on-one guidance from our expert PEAK personal trainer. Tailor your session to perfect exercise form, discover new routines, or kickstart your fitness journey.',
+                whoIsItFor: 'Those wishing to perfect exercise form, discover new routines, or create a fitness plan.',
+                cost: 'University: $40, Community: $80',
+                setting: 'Virtual or In-Person at Peak',
+                duration: '60 Min',
+                notes: 'AMB Referral to Wellness'
+            },
+            {
+                category: 'Movement & Fitness',
+                program: 'Medical Gym',
+                description: 'Offers fitness assessments, group classes, and wellness education. This supervised exercise program promotes a physically active lifestyle in a supportive group atmosphere.',
+                whoIsItFor: 'Individuals managing conditions like Multiple Sclerosis, Parkinson\'s, or post-surgery.',
+                cost: '$75/month, patient assistance available',
+                setting: 'L.S. Skaggs Medical Gym at 295 Chipeta Way',
+                duration: 'Varies; month to month membership',
+                notes: 'Scholarships available. AMB Referral to Wellness.'
+            },
+            {
+                category: 'Massage Therapy',
+                program: 'Massage Therapy',
+                description: 'A technique where a professional applies pressures and movements to your muscles to relieve pain and improve wellness.',
+                whoIsItFor: 'Anyone needing help with issues from injury rehabilitation to stress relief.',
+                cost: '30 Min: $35, 60 Min: $65, 90 Min: $90',
+                setting: '295 Chipeta Way',
+                duration: '30, 60, or 90 Min',
+                notes: 'AMB Referral to Massage Therapy',
+                sectionDescription: "Experience the therapeutic benefits of massage, tailored to relieve pain, reduce stress, and promote overall relaxation and wellness."
+            },
+            {
+                category: 'Stress Management',
+                program: 'Mindfulness-Based Stress Reduction',
+                description: 'This program teaches you how to develop mindful awareness and live with greater health and happiness.',
+                whoIsItFor: 'Anyone new to mindfulness or seeking to deepen their practice.',
+                cost: 'University: $50, Community: $200',
+                setting: 'Varies',
+                duration: '4 weeks',
+                notes: 'AMB Referral to Wellness',
+                sectionDescription: "Learn effective techniques to manage stress, cultivate mindfulness, and enhance your mental and emotional resilience for a healthier, more balanced life."
+            },
+            {
+                category: 'Stress Management',
+                program: 'Everyday Mindfulness Management',
+                description: 'The goal of the program is to build mindful awareness and foster health and growth.',
+                whoIsItFor: 'People seeking tools to manage stress, health, and experience greater joy and connection.',
+                cost: 'University: $125, Community: $325',
+                setting: 'Varies',
+                duration: '8 weeks',
+                notes: 'All day retreat part of program. AMB Referral to Wellness.'
+            },
+            {
+                category: 'Nutrition',
+                program: 'Food Pharmacy',
+                description: 'A mobile trailer with healthy food options available to patients with a food prescription from their provider.',
+                whoIsItFor: 'Patients with diabetes, hypertension, heart disease, and food insecurity.',
+                cost: 'Free',
+                setting: 'Redwood & Greenwood Health Center',
+                duration: 'Varies',
+                notes: 'Referral is needed',
+                sectionDescription: "Discover the power of food with our nutrition programs. Learn to make healthy, delicious choices that nourish your body and support your health goals."
+            },
+            {
+                category: 'Nutrition',
+                program: 'Nutrition Consultation',
+                description: 'Meet with a registered dietitian for customized advice to help you create long-lasting healthy eating habits.',
+                whoIsItFor: 'Athletes, parents, or anyone aiming to enhance well-being through diet.',
+                cost: 'Insurance billed',
+                setting: 'Virtual or In-Person',
+                duration: '60 Min',
+                notes: 'AMB Referral to Wellness'
+            },
+            {
+                category: 'Nutrition',
+                program: 'Culinary Medicine',
+                description: 'Learn how nutrition translates into practical food choices and how to give patients advice regarding what, when, why, and how to eat.',
+                whoIsItFor: 'Anyone looking to improve their cooking habits.',
+                cost: 'University: $40, Community: $80',
+                setting: 'Madsen and SHHC',
+                duration: '3 visits (typically over 6 weeks)',
+                notes: 'Appointments led by a physician and registered dietitian.'
+            },
+            {
+                category: 'Nutrition',
+                program: 'Intuitive Eating',
+                description: 'This program is all about creating a healthy relationship around food, body, mind, and movement through self-care, regardless of weight or size.',
+                whoIsItFor: 'Anyone looking to create a healthy relationship with food, body, mind and movement.',
+                cost: 'University: $50, Community: $150',
+                setting: 'Varies',
+                duration: 'Varies',
+                notes: 'AMB Referral to Wellness'
+            },
+            {
+                category: 'Weight & Diabetes Management',
+                program: 'The New You',
+                description: 'Combines nutrition, exercise, and wellness to help you eat healthier, become more active, and reach your weight goals with long-term success.',
+                whoIsItFor: 'Adults with a BMI of 30 or greater.',
+                cost: 'Insurance billed - depends on coverage.',
+                setting: 'Individual and group sessions',
+                duration: '22 sessions over 12 months',
+                notes: 'AMB Referral to Dietitian',
+                sectionDescription: "Receive comprehensive support for weight and diabetes management through our evidence-based programs, focusing on sustainable lifestyle changes."
+            },
+            {
+                category: 'Weight & Diabetes Management',
+                program: 'The New Youth',
+                description: 'This program teaches essential skills in nutrition, movement, and healthy habits for teens.',
+                whoIsItFor: 'Teens age 12-18 with a high BMI.',
+                cost: 'Insurance billed - depends on coverage.',
+                setting: 'Individual and group sessions',
+                duration: '15 sessions over 6 months',
+                notes: 'AMB Referral to Dietitian'
+            },
+            {
+                category: 'Weight & Diabetes Management',
+                program: 'Diabetes Prevention Program',
+                description: 'This program will help you delay or prevent developing Type 2 diabetes through coaching and support for positive lifestyle changes.',
+                whoIsItFor: 'Adults 18+ at risk for Type 2 diabetes.',
+                cost: 'Varies depending on insurance and employer.',
+                setting: 'Group, In-person or Online',
+                duration: '24 sessions over 12 months',
+                notes: 'AMB Referral to Wellness'
+            },
+            {
+                category: 'Specialized Programs',
+                program: 'Build a Bone',
+                description: 'A comprehensive approach to strengthening your skeletal system and preventing bone loss.',
+                whoIsItFor: 'Adults with osteopenia, osteoporosis, or anyone wanting to maintain bone health.',
+                cost: 'University: $25, Community: $125',
+                setting: 'In-person or Virtual',
+                duration: '4 sessions of 2 hours',
+                notes: 'AMB Referral to Wellness',
+                sectionDescription: "Explore our specialized programs designed to address specific health needs, from bone health to comprehensive physicals, providing targeted care and support."
+            },
+            {
+                category: 'Specialized Programs',
+                program: 'Executive Physical',
+                description: 'Take control of your health with our One-Day Wellness Program for busy individuals. A comprehensive physical assessment designed specifically for you.',
+                whoIsItFor: 'Busy professionals looking to combine multiple health appointments into one day.',
+                cost: 'Varies, packages start at $2500',
+                setting: 'In-Person',
+                duration: 'One day',
+                notes: 'Standard, Performance, and Wellness Packages available.'
+            },
+            {
+                category: 'Specialized Programs',
+                program: 'U Park Rx',
+                description: 'Education on how to identify activity opportunities that meet individual fitness and exercise goals in a community environment. Led by Parks, Recreation, Tourism students.',
+                whoIsItFor: 'Any patient wanting to become more physically active outside and without contraindications.',
+                cost: 'Free',
+                setting: 'In person',
+                duration: 'Varies',
+                notes: 'AMB Referral to Wellness'
+            }
+        ];
+
+
+        // --- RENDERING LOGIC ---
+
+        const accentColors = [
+            { name: 'moab', color: '#9DD8D7' },
+            { name: 'marigold', color: '#EFC041' },
+            { name: 'coral', color: '#E4937B' },
+            { name: 'sunrise', color: '#FFB81D' },
+            { name: 'green', color: '#6CC24A' },
+            { name: 'lake', color: '#4F868E' }
+        ];
+
+        // Generic function to render services to a container
+        function renderCards(containerId, servicesData) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = ''; // Clear existing content
+
+            const categories = [...new Set(servicesData.map(s => s.category))];
+
+            categories.forEach((category, categoryIndex) => {
+                const section = document.createElement('section');
+                section.className = 'mb-12';
+
+                const title = document.createElement('h2');
+                title.className = 'text-3xl font-bold utah-red mb-6 border-b-4 border-gray-300 pb-2 title-font';
+                title.textContent = category;
+                section.appendChild(title);
+
+                const categoryServices = servicesData.filter(s => s.category === category);
+                if (categoryServices.length > 0 && categoryServices[0].sectionDescription) {
+                    const descPara = document.createElement('p');
+                    descPara.className = 'section-description text-center max-w-3xl mx-auto';
+                    descPara.textContent = categoryServices[0].sectionDescription;
+                    section.appendChild(descPara);
+                }
+
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
+
+                categoryServices.forEach((service, serviceIndex) => {
+                    const card = document.createElement('div');
+                    const colorScheme = accentColors[(categoryIndex + serviceIndex) % accentColors.length];
+                    const accent = colorScheme.name;
+                    const cardColor = colorScheme.color;
+
+                    card.className = `bg-white rounded-lg shadow-${accent} p-6 flex flex-col justify-between transform hover:scale-105 transition-transform duration-300 hover:shadow-${accent}-lg`;
+
+                    let contactButton = '';
+                    let pdfLink = '';
+                    let finalUrl = '';
+                    let buttonText = service.buttonText || 'Contact Us';
+
+                    if (service.buttonLink) {
+                        finalUrl = service.buttonLink;
+                    } else if (service.contact && (service.contact.startsWith('http'))) {
+                        finalUrl = service.contact;
+                        buttonText = 'Visit Website';
+                    } else if (service.contact === 'Website Address') {
+                        finalUrl = 'https://healthcare.utah.edu/integrative-health/';
+                        buttonText = 'Visit Website';
+                    } else if (containerId === 'resiliency-content' && !service.buttonLink) {
+                        finalUrl = 'https://utah.sjc1.qualtrics.com/jfe/form/SV_abo3R87zemFLCrc';
+                    }
+                    
+                    if (finalUrl) {
+                        contactButton = `<a href="${finalUrl}" target="_blank" class="card-button-interactive mt-auto inline-block text-white font-bold py-3 px-6 rounded-lg text-center hover:opacity-80 transition-all duration-300 transform hover:-translate-y-1 shadow-lg" style="background-color: ${cardColor};">${buttonText}</a>`;
+                        pdfLink = `<a href="${finalUrl}" target="_blank" class="card-button-pdf" style="display: none;">${finalUrl}</a>`;
+                    }
+
+                    const finalCardContent = `
+                        <div>
+                            <h3 class="text-xl font-bold mb-2 title-font" style="color: #1A1A1A;">${service.program}</h3>
+                            <p class="text-gray-700 mb-4 text-base">${service.description}</p>
+                            <p class="text-gray-600 text-sm mb-1"><strong>For:</strong> ${service.whoIsItFor}</p>
+                            <p class="text-gray-600 text-sm mb-1"><strong>Cost:</strong> ${service.cost}</p>
+                            <p class="text-gray-600 text-sm mb-1"><strong>Setting:</strong> ${service.setting}</p>
+                            <p class="text-gray-600 text-sm mb-4"><strong>Duration:</strong> ${service.duration}</p>
+                            ${service.notes ? `<p class="text-gray-600 text-sm mb-4"><strong>Notes:</strong> ${service.notes}</p>` : (service.contact ? `<p class="text-gray-600 text-sm mb-4"><strong>Contact:</strong> ${service.contact}</p>` : '')}
+                        </div>
+                        <div>
+                            ${contactButton}
+                            ${pdfLink}
+                        </div>
+                    `;
+                    card.innerHTML = finalCardContent;
+                    grid.appendChild(card);
+                });
+
+                section.appendChild(grid);
+                container.appendChild(section);
+            });
+        }
+        
+        // --- NAVIGATION LOGIC ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const navResiliency = document.getElementById('nav-resiliency');
+            const navPrograms = document.getElementById('nav-programs');
+            const resiliencyContent = document.getElementById('resiliency-content');
+            const programsContent = document.getElementById('programs-content');
+            const resiliencyContact = document.getElementById('resiliency-contact');
+            const programsContact = document.getElementById('programs-contact');
+            const downloadBtn = document.getElementById('download-pdf');
+
+
+            // Initial render
+            renderCards('resiliency-content', resiliencyServices);
+            renderCards('programs-content', osherPrograms);
+            
+            function setActiveView(view) {
+                if (view === 'resiliency') {
+                    resiliencyContent.style.display = 'block';
+                    programsContent.style.display = 'none';
+                    resiliencyContact.style.display = 'block';
+                    programsContact.style.display = 'none';
+                    navResiliency.classList.add('active');
+                    navPrograms.classList.remove('active');
+                } else {
+                    resiliencyContent.style.display = 'none';
+                    programsContent.style.display = 'block';
+                    resiliencyContact.style.display = 'none';
+                    programsContact.style.display = 'block';
+                    navPrograms.classList.add('active');
+                    navResiliency.classList.remove('active');
+                }
+            }
+
+            setActiveView('resiliency');
+
+            navResiliency.addEventListener('click', (e) => {
+                e.preventDefault();
+                setActiveView('resiliency');
+            });
+
+            navPrograms.addEventListener('click', (e) => {
+                e.preventDefault();
+                setActiveView('programs');
+            });
+
+            // --- PDF DOWNLOAD LOGIC (REVISED) ---
+            downloadBtn.addEventListener('click', async () => {
+                const originalButtonText = downloadBtn.textContent;
+                downloadBtn.textContent = 'Generating...';
+                downloadBtn.disabled = true;
+                document.body.classList.add('pdf-prepare-mode');
+
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const isResiliencyActive = resiliencyContent.style.display === 'block';
+                    const fileName = isResiliencyActive ? 'Resiliency_Center_Services.pdf' : 'Whole_Person_Health.pdf';
+                    
+                    const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const pageHeight = doc.internal.pageSize.getHeight();
+                    const margin = 10;
+                    const contentWidth = pageWidth - margin * 2;
+                    let cursorY = margin;
+
+                    // --- PDF Header ---
+                    const pdfHeaderContainer = document.createElement('div');
+                    pdfHeaderContainer.style.position = 'absolute';
+                    pdfHeaderContainer.style.left = '-9999px';
+                    pdfHeaderContainer.style.top = '0';
+                    const mainContentWidth = document.getElementById('main-content').offsetWidth;
+                    pdfHeaderContainer.style.width = mainContentWidth ? `${mainContentWidth}px` : '1024px';
+                    
+                    pdfHeaderContainer.innerHTML = `
+                        <div class="p-4 flex justify-between items-center w-full bg-white" style="border-bottom: 1px solid #ddd;">
+                            <img src="https://healthcare.utah.edu/themes/custom/theme_uou_clinical/logo.svg" style="height: 2.5rem; width: auto;">
+                            <div class="text-right">
+                                <h1 class="text-2xl font-bold title-font utah-red" style="font-size: 20px;">Osher Center for Integrative Health</h1>
+                                <h2 class="text-xl font-bold title-font" style="font-size: 16px;">${isResiliencyActive ? 'Resiliency Center Services' : 'Whole Person Health'}</h2>
+                            </div>
+                        </div>`;
+                    document.body.appendChild(pdfHeaderContainer);
+                    
+                    const headerCanvas = await html2canvas(pdfHeaderContainer.firstElementChild, { scale: 3, useCORS: true });
+                    const headerImgData = headerCanvas.toDataURL('image/png');
+                    const headerImgHeight = (headerCanvas.height * contentWidth) / headerCanvas.width;
+                    document.body.removeChild(pdfHeaderContainer);
+
+                    const addHeader = () => {
+                        doc.addImage(headerImgData, 'PNG', margin, margin, contentWidth, headerImgHeight);
+                        cursorY = margin + headerImgHeight + 5; 
+                    };
+
+                    const addElementToPdf = async (element, options = { spacing: 4 }) => {
+                        const canvas = await html2canvas(element, { scale: 3, useCORS: true, logging: false });
+                        const imgData = canvas.toDataURL('image/png');
+                        const elementWidth = options.customWidth || contentWidth;
+                        const imgHeight = (canvas.height * elementWidth) / canvas.width;
+
+                        if (cursorY + imgHeight > pageHeight - margin) {
+                            doc.addPage();
+                            addHeader();
+                        }
+                        
+                        doc.addImage(imgData, 'PNG', margin, cursorY, elementWidth, imgHeight);
+                        cursorY += imgHeight + options.spacing;
+                    };
+                    
+                    addHeader();
+
+                    // --- Process Content ---
+                    const contactId = isResiliencyActive ? 'resiliency-contact' : 'programs-contact';
+                    const contentId = isResiliencyActive ? 'resiliency-content' : 'programs-content';
+                    
+                    await addElementToPdf(document.getElementById(contactId), { spacing: 8 });
+
+                    const contentContainer = document.getElementById(contentId);
+                    const sections = contentContainer.querySelectorAll('section.mb-12');
+
+                    for (const section of sections) {
+                        await addElementToPdf(section.querySelector('h2'), { spacing: 2 });
+                        const desc = section.querySelector('p.section-description');
+                        if (desc) await addElementToPdf(desc, { spacing: 5 });
+                        
+                        const cards = Array.from(section.querySelectorAll('.grid > div'));
+                        const cardPairs = [];
+                        for (let i = 0; i < cards.length; i += 2) {
+                            cardPairs.push(cards.slice(i, i + 2));
+                        }
+
+                        for (const pair of cardPairs) {
+                            const rowContainer = document.createElement('div');
+                            rowContainer.style.position = 'absolute';
+                            rowContainer.style.left = '-9999px';
+                            rowContainer.style.width = mainContentWidth ? `${mainContentWidth}px` : '1024px';
+                            rowContainer.style.display = 'flex';
+                            rowContainer.style.gap = '20px'; // Gap between cards in a row
+                            
+                            pair.forEach(cardNode => {
+                                const cardClone = cardNode.cloneNode(true);
+                                cardClone.style.width = '50%'; // Each card takes up half the space
+                                rowContainer.appendChild(cardClone);
+                            });
+
+                            document.body.appendChild(rowContainer);
+                            await addElementToPdf(rowContainer, { spacing: 5 });
+                            document.body.removeChild(rowContainer);
+                        }
+                    }
+
+                    doc.save(fileName);
+
+                } catch (error) {
+                    console.error("Failed to generate PDF:", error);
+                    const originalColor = downloadBtn.style.backgroundColor;
+                    downloadBtn.textContent = 'Error!';
+                    downloadBtn.style.backgroundColor = '#B43F3F';
+                    setTimeout(() => {
+                         downloadBtn.style.backgroundColor = originalColor;
+                    }, 2000);
+                } finally {
+                    document.body.classList.remove('pdf-prepare-mode');
+                    if (downloadBtn.textContent.includes('Error')) {
+                        setTimeout(() => {
+                           downloadBtn.textContent = originalButtonText;
+                           downloadBtn.disabled = false;
+                        }, 2000);
+                    } else {
+                        downloadBtn.textContent = originalButtonText;
+                        downloadBtn.disabled = false;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
